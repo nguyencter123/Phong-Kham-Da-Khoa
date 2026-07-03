@@ -33,8 +33,23 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
         ]);
 
+
         $receptionist = User::create([
             'name' => 'Lễ tân Ngọc',
+        ]);
+        User::create([
+            'name' => 'Cao Phùng Phán',
+            'email' => 'admin1@gmail.com',
+            'phone' => '0353961884',
+            'citizen_id' => '031002006967',
+            'password' => Hash::make('123456'), 
+            'role' => 'admin',
+            'is_active' => true,
+        ]);
+
+        // 2. Tạo tài khoản Tiếp tân
+        User::create([
+            'name' => 'Tiếp Tân Số 1',
             'email' => 'receptionist@clinic.com',
             'phone' => '0901000002',
             'citizen_id' => '001200000002',

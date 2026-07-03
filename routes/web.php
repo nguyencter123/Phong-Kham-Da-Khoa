@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Admin\UserController;
 
 // 1. Chuyển hướng trang chủ thẳng vào màn hình Đăng nhập
 Route::redirect('/', '/login');
@@ -32,6 +33,16 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Quản lý chuyên khoa
     Route::resource('specialties', App\Http\Controllers\Admin\SpecialtyController::class)->except(['create', 'show', 'edit']);
+
+    Route::resource('users', UserController::class);
+    Route::patch(
+            'users/{user}/reset-password',
+            [UserController::class, 'resetPassword']
+        )->name('users.reset-password');
+    Route::patch(
+            'users/{user}/toggle-status',
+            [UserController::class, 'toggleStatus']
+        )->name('users.toggle-status');
 });
 
 Route::middleware(['auth', 'role:doctor'])->prefix('doctor')->name('doctor.')->group(function () {
@@ -74,3 +85,5 @@ Route::middleware(['auth', 'role:patient'])->prefix('patient')->name('patient.')
     Route::get('/appointments/shifts', [App\Http\Controllers\Patient\AppointmentController::class, 'getAvailableShifts'])->name('appointments.shifts');
     Route::get('/appointments/history', [App\Http\Controllers\Patient\AppointmentController::class, 'history'])->name('appointments.history');
 });
+
+

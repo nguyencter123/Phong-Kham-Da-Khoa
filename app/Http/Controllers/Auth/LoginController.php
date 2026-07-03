@@ -86,6 +86,19 @@ class LoginController extends Controller
             'patient' => redirect('/patient'),
             default => abort(403, 'Role không hợp lệ hoặc chưa được gán quyền.'),
         };
+        
+        if (!$user->is_active) {
+
+        auth()->logout();
+
+        return redirect('/login')
+
+            ->withErrors([
+
+                'email' => 'Tài khoản của bạn đã bị khóa.'
+
+            ]);
+        }
     }
 
     public function logout(\Illuminate\Http\Request $request)

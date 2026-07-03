@@ -2,66 +2,110 @@
 
 @section('content')
 <div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <h3 class="mb-4 text-primary"><i class="fas fa-user-shield"></i> Admin Dashboard</h3>
 
-            @if (session('status'))
-                <div class="alert alert-success" role="alert">
-                    {{ session('status') }}
-                </div>
-            @endif
+    <h2 class="mb-4">
+        Admin Dashboard
+    </h2>
 
-            <div class="row">
-                <!-- Quản lý Nhân sự -->
-                <div class="col-md-4 mb-4">
-                    <div class="card shadow-sm h-100 border-0 border-start border-primary border-4">
-                        <div class="card-body text-center py-4">
-                            <div class="display-4 text-primary mb-3">
-                                <i class="fas fa-users-cog"></i>
-                            </div>
-                            <h5 class="card-title fw-bold">Quản lý Nhân sự</h5>
-                            <p class="card-text text-muted">Thêm mới, chỉnh sửa thông tin, cấp lại mật khẩu và khóa tài khoản Bác sĩ, Lễ tân.</p>
-                            <a href="{{ route('admin.staff.index') }}" class="btn btn-primary mt-2">
-                                <i class="fas fa-arrow-right"></i> Truy cập
-                            </a>
-                        </div>
+    <div class="row g-4">
+
+        {{-- Quản lý tài khoản --}}
+        <div class="col-md-3">
+            <a href="{{ route('admin.users.index') }}" class="text-decoration-none">
+                <div class="card shadow-sm h-100 border-primary">
+                    <div class="card-body text-center">
+                        <h1>👥</h1>
+                        <h5>Quản lý tài khoản</h5>
                     </div>
                 </div>
-
-                <!-- Thống kê (Giữ chỗ cho tương lai) -->
-                <div class="col-md-4 mb-4">
-                    <div class="card shadow-sm h-100 border-0 border-start border-success border-4">
-                        <div class="card-body text-center py-4">
-                            <div class="display-4 text-success mb-3">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                            <h5 class="card-title fw-bold">Báo cáo Thống kê</h5>
-                            <p class="card-text text-muted">Xem báo cáo doanh thu, số lượng bệnh nhân và thống kê hoạt động phòng khám.</p>
-                            <a href="#" class="btn btn-outline-secondary mt-2 disabled">
-                                <i class="fas fa-tools"></i> Đang phát triển
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Danh mục Chuyên khoa -->
-                <div class="col-md-4 mb-4">
-                    <div class="card shadow-sm h-100 border-0 border-start border-warning border-4">
-                        <div class="card-body text-center py-4">
-                            <div class="display-4 text-warning mb-3">
-                                <i class="fas fa-stethoscope"></i>
-                            </div>
-                            <h5 class="card-title fw-bold">Danh mục Chuyên khoa</h5>
-                            <p class="card-text text-muted">Xem, thêm mới, sửa đổi thông tin và hình ảnh các chuyên khoa của phòng khám.</p>
-                            <a href="{{ route('admin.specialties.index') }}" class="btn btn-warning text-dark mt-2">
-                                <i class="fas fa-arrow-right"></i> Truy cập
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            </a>
         </div>
+
+        {{-- Chuyên khoa --}}
+        <div class="col-md-3">
+            <a href="{{ route('admin.specialties.index') }}" class="text-decoration-none">
+                <div class="card shadow-sm h-100 border-success">
+                    <div class="card-body text-center">
+                        <h1>🏥</h1>
+                        <h5>Chuyên khoa</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        {{-- Nhân sự --}}
+        <div class="col-md-3">
+            <a href="{{ route('admin.staff.index') }}" class="text-decoration-none">
+                <div class="card shadow-sm h-100 border-warning">
+                    <div class="card-body text-center">
+                        <h1>👨‍⚕️</h1>
+                        <h5>Nhân sự</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        {{-- Lịch làm việc --}}
+        <div class="col-md-3">
+            <a href="#" class="text-decoration-none">
+                <div class="card shadow-sm h-100 border-danger">
+                    <div class="card-body text-center">
+                        <h1>📅</h1>
+                        <h5>Lịch làm việc</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        {{-- Kho thuốc --}}
+        <div class="col-md-3">
+            <a href="#" class="text-decoration-none">
+                <div class="card shadow-sm h-100 border-info">
+                    <div class="card-body text-center">
+                        <h1>💊</h1>
+                        <h5>Kho thuốc</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        {{-- Bệnh nhân --}}
+        <div class="col-md-3">
+            <a href="#" class="text-decoration-none">
+                <div class="card shadow-sm h-100 border-secondary">
+                    <div class="card-body text-center">
+                        <h1>🧑</h1>
+                        <h5>Bệnh nhân</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        {{-- Bệnh án --}}
+        <div class="col-md-3">
+            <a href="#" class="text-decoration-none">
+                <div class="card shadow-sm h-100 border-dark">
+                    <div class="card-body text-center">
+                        <h1>📋</h1>
+                        <h5>Bệnh án</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        {{-- Báo cáo --}}
+        <div class="col-md-3">
+            <a href="#" class="text-decoration-none">
+                <div class="card shadow-sm h-100 border-primary">
+                    <div class="card-body text-center">
+                        <h1>📈</h1>
+                        <h5>Báo cáo</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+
     </div>
+
 </div>
 @endsection
