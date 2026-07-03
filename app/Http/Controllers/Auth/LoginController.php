@@ -69,6 +69,16 @@ class LoginController extends Controller
 
     protected function authenticated(\Illuminate\Http\Request $request, $user)
     {
+        if (!$user->is_active) {
+            auth()->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                $this->username() => ['Tài khoản của bạn đã bị khóa. Vui lòng liên hệ Quản trị viên.'],
+            ]);
+        }
+
         return match ($user->role) {
             'admin' => redirect('/admin'),
             'receptionist' => redirect('/receptionist'),

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('doctor_id')->constrained('doctors')->onDelete('cascade');
             $table->tinyInteger('day_of_week'); // 0: Chủ nhật, 1: Thứ 2... 6: Thứ 7
             $table->enum('shift', ['morning', 'afternoon']); // Đặt theo ca
-            $table->integer('max_patients_per_slot')->default(20); // Giới hạn ca
+            $table->integer('max_patients_per_slot')->default(10); // Giới hạn ca
             $table->timestamps();
         });
     }
