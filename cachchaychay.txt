@@ -1,0 +1,5 @@
+Tạo bảng dữ liệu
+php artisan migrate
+
+Chạy server 
+php artisan serve
