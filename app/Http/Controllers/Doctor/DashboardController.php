@@ -28,7 +28,12 @@ class DashboardController extends Controller
             ->orderBy('updated_at', 'asc')
             ->get();
 
-        return view('doctor.dashboard', compact('appointments'));
+        $schedules = \App\Models\Schedule::where('doctor_id', $doctor->id)
+            ->orderByRaw('day_of_week = 0, day_of_week') // Sắp T2 -> CN
+            ->orderBy('shift', 'asc') // Sáng -> Chiều
+            ->get();
+
+        return view('doctor.dashboard', compact('appointments', 'schedules'));
     }
 
     public function startExamine($id)

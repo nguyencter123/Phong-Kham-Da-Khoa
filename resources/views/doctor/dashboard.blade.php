@@ -106,6 +106,46 @@
                 </div>
             </div>
             
+            <!-- Lịch làm việc trong tuần -->
+            <div class="card shadow-sm border-0 rounded-lg mt-5">
+                <div class="card-header bg-info text-white fw-bold d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-calendar-alt"></i> Lịch làm việc trong tuần của tôi</span>
+                </div>
+
+                <div class="card-body p-0">
+                    @if($schedules->count() == 0)
+                        <div class="text-center py-5">
+                            <h5 class="text-muted">Bạn chưa được phân công lịch làm việc mẫu nào.</h5>
+                        </div>
+                    @else
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="text-center" width="20%">Ngày trong tuần</th>
+                                        <th width="40%">Ca làm việc</th>
+                                        <th class="text-center" width="40%">Số BN tối đa / Ca</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php
+                                        $days = [0 => 'Chủ nhật', 1 => 'Thứ 2', 2 => 'Thứ 3', 3 => 'Thứ 4', 4 => 'Thứ 5', 5 => 'Thứ 6', 6 => 'Thứ 7'];
+                                        $shifts = ['morning' => '<span class="badge bg-warning text-dark"><i class="fas fa-sun"></i> Ca Sáng</span>', 'afternoon' => '<span class="badge bg-primary"><i class="fas fa-cloud-sun"></i> Ca Chiều</span>'];
+                                    @endphp
+                                    @foreach($schedules as $schedule)
+                                        <tr>
+                                            <td class="text-center fw-bold">{{ $days[$schedule->day_of_week] ?? 'N/A' }}</td>
+                                            <td>{!! $shifts[$schedule->shift] ?? 'N/A' !!}</td>
+                                            <td class="text-center text-success fw-bold">{{ $schedule->max_patients_per_slot }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+                </div>
+            </div>
+            
         </div>
     </div>
 </div>

@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Admin\UserController;
 
 // 1. Chuyển hướng trang chủ thẳng vào màn hình Đăng nhập
 Route::redirect('/', '/login');
@@ -25,15 +24,6 @@ Route::get('/home', function () {
 // 3. Các Route dành riêng cho từng Role đã phân quyền
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
-    Route::resource('users', UserController::class);
-    Route::patch(
-            'users/{user}/reset-password',
-            [UserController::class, 'resetPassword']
-        )->name('users.reset-password');
-    Route::patch(
-            'users/{user}/toggle-status',
-            [UserController::class, 'toggleStatus']
-        )->name('users.toggle-status');
     
     // Quản lý nhân sự
     Route::resource('staff', App\Http\Controllers\Admin\StaffController::class)->except(['show', 'destroy']);
@@ -41,9 +31,19 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('staff/{staff}/reset-password', [App\Http\Controllers\Admin\StaffController::class, 'resetPassword'])->name('staff.reset-password');
 
     // Quản lý chuyên khoa
-    Route::resource('specialties', App\Http\Controllers\Admin\SpecialtyController::class);
+    Route::resource('specialties', App\Http\Controllers\Admin\SpecialtyController::class)->except(['create', 'show', 'edit']);
 
-    
+    // Quản lý lịch làm việc mẫu
+    Route::resource('schedules', App\Http\Controllers\Admin\ScheduleController::class)->except(['create', 'show', 'edit']);
+    Route::patch('schedules/{schedule}/toggle-active', [App\Http\Controllers\Admin\ScheduleController::class, 'toggleActive'])->name('schedules.toggle-active');
+
+    // Quản lý kho thuốc
+    Route::resource('medicines', App\Http\Controllers\Admin\MedicineController::class)->except(['create', 'show', 'edit']);
+
+    // Xem báo cáo thống kê
+    Route::get('reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
+    Route::get('reports/data', [App\Http\Controllers\Admin\ReportController::class, 'getData'])->name('reports.data');
+    Route::get('reports/export', [App\Http\Controllers\Admin\ReportController::class, 'export'])->name('reports.export');
 });
 
 Route::middleware(['auth', 'role:doctor'])->prefix('doctor')->name('doctor.')->group(function () {
@@ -62,6 +62,7 @@ Route::middleware(['auth', 'role:receptionist'])->prefix('receptionist')->name('
     Route::put('/appointments/{id}/reschedule', [App\Http\Controllers\Receptionist\AppointmentController::class, 'update'])->name('appointments.update');
     Route::patch('/appointments/{id}/checkin', [App\Http\Controllers\Receptionist\AppointmentController::class, 'checkIn'])->name('appointments.checkin');
     Route::patch('/appointments/{id}/assign', [App\Http\Controllers\Receptionist\AppointmentController::class, 'assignDoctor'])->name('appointments.assign');
+    Route::patch('/appointments/{id}/cancel', [App\Http\Controllers\Receptionist\AppointmentController::class, 'cancel'])->name('appointments.cancel');
     
     Route::get('/appointments/{id}/payment', [App\Http\Controllers\Receptionist\PaymentController::class, 'show'])->name('payment.show');
     Route::post('/appointments/{id}/payment/cash', [App\Http\Controllers\Receptionist\PaymentController::class, 'processCash'])->name('payment.cash');
@@ -83,8 +84,7 @@ Route::middleware(['auth', 'role:patient'])->prefix('patient')->name('patient.')
     Route::get('/appointments', [App\Http\Controllers\Patient\AppointmentController::class, 'index'])->name('appointments.index');
     Route::get('/appointments/create', [App\Http\Controllers\Patient\AppointmentController::class, 'create'])->name('appointments.create');
     Route::post('/appointments', [App\Http\Controllers\Patient\AppointmentController::class, 'store'])->name('appointments.store');
+    Route::patch('/appointments/{id}/cancel', [App\Http\Controllers\Patient\AppointmentController::class, 'cancel'])->name('appointments.cancel');
     Route::get('/appointments/shifts', [App\Http\Controllers\Patient\AppointmentController::class, 'getAvailableShifts'])->name('appointments.shifts');
     Route::get('/appointments/history', [App\Http\Controllers\Patient\AppointmentController::class, 'history'])->name('appointments.history');
 });
-
-

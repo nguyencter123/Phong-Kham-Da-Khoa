@@ -7,12 +7,11 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, SoftDeletes;
+    use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -26,7 +25,6 @@ class User extends Authenticatable
         'citizen_id',
         'password',
         'role',
-        'is_active',
     ];
 
     /**
@@ -66,37 +64,5 @@ class User extends Authenticatable
     {
         // Vì patient_id trong bảng appointments trỏ đến id của bảng users
         return $this->hasMany(Appointment::class, 'patient_id');
-    }
-
-    // thêm truy vấn tìm kiếm 
-    public function scopeSearch($query, $keyword)
-    {
-        if (!$keyword) {
-            return $query;
-        }
-
-        return $query->where(function ($q) use ($keyword) {
-            $q->where('name', 'like', "%{$keyword}%")
-            ->orWhere('email', 'like', "%{$keyword}%")
-            ->orWhere('phone', 'like', "%{$keyword}%");
-        });
-    } 
-    // thêm scope role
-    public function scopeRole($query, $role)
-    {
-        if (!$role) {
-            return $query;
-        }
-
-        return $query->where('role', $role);
-    }
-    // scope status
-    public function scopeStatus($query, $status)
-    {
-        if ($status === null || $status === '') {
-            return $query;
-        }
-
-        return $query->where('is_active', $status);
     }
 }

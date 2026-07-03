@@ -72,6 +72,7 @@ class AppointmentController extends Controller
             // Hướng A: Check if doctor works on this day
             $workingShifts = Schedule::where('doctor_id', $doctorId)
                 ->where('day_of_week', $dayOfWeek)
+                ->where('is_active', true)
                 ->pluck('shift')
                 ->toArray();
             
@@ -84,13 +85,16 @@ class AppointmentController extends Controller
 
     public function store(Request $request)
     {
+        $maxDate = Carbon::now()->addWeek()->endOfWeek()->toDateString(); // Ngày Chủ nhật của tuần kế tiếp
+
         $request->validate([
-            'date' => 'required|date|after_or_equal:today',
+            'date' => 'required|date|after_or_equal:today|before_or_equal:' . $maxDate,
             'shift' => 'required|in:morning,afternoon',
             'reason' => 'required|string',
         ], [
             'reason.required' => 'Vui lòng cung cấp triệu chứng sơ bộ để chúng tôi sắp xếp bác sĩ phù hợp nhất.',
             'date.required' => 'Vui lòng chọn ngày khám.',
+            'date.before_or_equal' => 'Chỉ có thể đặt lịch khám trong tuần hiện tại và 1 tuần kế tiếp.',
             'shift.required' => 'Vui lòng chọn ca khám.',
         ]);
 
@@ -98,14 +102,16 @@ class AppointmentController extends Controller
         $date = Carbon::parse($request->date);
         $doctorId = $request->doctor_id; // Có thể null
 
-        // E5 - Xung đột lịch cá nhân: Bệnh nhân đã có lịch vào ngày này (Pending hoặc Approved)
+        // E5 - Xung đột lịch cá nhân: Bệnh nhân đã có lịch cùng CA trong ngày này
         $hasConflict = Appointment::where('patient_id', $patientId)
             ->whereDate('date', $date->toDateString())
-            ->whereIn('status', [0, 1])
+            ->where('shift', $request->shift)
+            ->where('status', '<', 6) // Trừ các lịch đã hủy (thường là 6 hoặc 7)
             ->exists();
 
         if ($hasConflict) {
-            return back()->with('error', 'Bạn đã có một lịch hẹn trong ngày này. Vui lòng kiểm tra Lịch sử khám.')->withInput();
+            $shiftLabel = $request->shift == 'morning' ? 'Ca Sáng' : 'Ca Chiều';
+            return back()->with('error', "Bạn đã có một lịch hẹn vào $shiftLabel ngày này. Không thể đặt 2 lịch trùng ca trong cùng một ngày.")->withInput();
         }
 
         if ($doctorId) {
@@ -119,11 +125,16 @@ class AppointmentController extends Controller
                 return back()->with('error', 'Bác sĩ không có lịch làm việc vào ngày này (hoặc ca này). Vui lòng chọn thời gian khác.')->withInput();
             }
 
-            // E4 - Hết slot Online
+            // E4 - Hết slot Online hoặc Ca đã bị khóa
             $schedule = Schedule::where('doctor_id', $doctorId)
                 ->where('day_of_week', $date->dayOfWeek)
                 ->where('shift', $request->shift)
+                ->where('is_active', true)
                 ->first();
+
+            if (!$schedule) {
+                return back()->with('error', 'Bác sĩ đã ngừng nhận lịch khám mới cho ca này.')->withInput();
+            }
 
             $currentBookings = Appointment::where('doctor_id', $doctorId)
                 ->whereDate('date', $date->toDateString())
@@ -152,5 +163,31 @@ class AppointmentController extends Controller
 
         return redirect()->route('patient.appointments.index')
             ->with('success', 'Đặt lịch thành công! Yêu cầu của bạn đang được xử lý.');
+    }
+
+    public function cancel(Request $request, $id)
+    {
+        $request->validate([
+            'cancel_reason' => 'required|string|max:255',
+        ]);
+
+        $appointment = Appointment::findOrFail($id);
+
+        // Đảm bảo chỉ được hủy lịch của chính mình
+        if ($appointment->patient_id !== auth()->user()->id) {
+            abort(403, 'Bạn không có quyền hủy lịch khám này.');
+        }
+
+        // Chỉ cho phép hủy nếu chưa bắt đầu khám (status < 3)
+        if ($appointment->status >= 3) {
+            return back()->with('error', 'Không thể hủy ca khám đã diễn ra hoặc đã hoàn thành.');
+        }
+
+        $appointment->update([
+            'status' => 6, // 6: Đã hủy
+            'cancel_reason' => $request->cancel_reason,
+        ]);
+
+        return back()->with('success', 'Đã hủy lịch khám thành công.');
     }
 }

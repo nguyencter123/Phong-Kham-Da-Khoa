@@ -8,7 +8,13 @@ class Schedule extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'doctor_id',
+        'day_of_week',
+        'shift',
+        'max_patients_per_slot',
+        'is_active',
+    ];
 
     public function doctor()
     {

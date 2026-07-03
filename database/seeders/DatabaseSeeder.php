@@ -36,6 +36,11 @@ class DatabaseSeeder extends Seeder
 
         $receptionist = User::create([
             'name' => 'Lễ tân Ngọc',
+            'email' => 'letanngoc@clinic.com',
+            'phone' => '0901000099',
+            'citizen_id' => '001200000099',
+            'password' => Hash::make('password'),
+            'role' => 'receptionist',
         ]);
         User::create([
             'name' => 'Cao Phùng Phán',
@@ -501,5 +506,68 @@ class DatabaseSeeder extends Seeder
             'payment_method' => null,
             'payment_status' => 'unpaid',
         ]);
+
+        // 10. Tạo dữ liệu ngẫu nhiên (Hoàn tất & Đã thanh toán) trong 30 ngày qua để vẽ biểu đồ
+        $allPatients = User::where('role', 'patient')->get();
+        $allDoctors = Doctor::all();
+        $allMedicines = Medicine::all();
+        $shifts = ['morning', 'afternoon'];
+
+        for ($i = 0; $i < 30; $i++) {
+            $randomDaysAgo = rand(1, 30);
+            $randomDate = Carbon::today()->subDays($randomDaysAgo);
+
+            $randPatient = $allPatients->random();
+            $randDoctor = $allDoctors->random();
+
+            $isCancelled = rand(1, 10) > 8; // 20% tỉ lệ hủy ca
+
+            $statsApt = Appointment::create([
+                'patient_id' => $randPatient->id,
+                'doctor_id' => $randDoctor->id,
+                'date' => $randomDate->toDateString(),
+                'shift' => $shifts[array_rand($shifts)],
+                'type' => rand(0, 1) ? 'online' : 'offline',
+                'reason' => 'Đau đầu, chóng mặt rải rác',
+                'status' => $isCancelled ? 6 : 5, // 5: Hoàn tất, 6: Hủy
+                'created_at' => $randomDate->copy()->subDays(2),
+                'updated_at' => $randomDate,
+            ]);
+
+            if (!$isCancelled) {
+                // Tạo Hóa đơn và thanh toán cho các ca hoàn tất
+                $statsRecord = MedicalRecord::create([
+                    'appointment_id' => $statsApt->id,
+                    'symptoms' => 'Triệu chứng nhẹ.',
+                    'diagnosis' => 'Theo dõi ngoại trú.',
+                    'notes' => 'Uống thuốc đúng giờ.',
+                ]);
+
+                $statsMed1 = $allMedicines->random();
+                $qty = rand(1, 10);
+
+                PrescriptionDetail::create([
+                    'medical_record_id' => $statsRecord->id,
+                    'medicine_id' => $statsMed1->id,
+                    'quantity' => $qty,
+                    'dosage' => 'Ngày 2 lần',
+                    'price_at_sale' => $statsMed1->price,
+                ]);
+
+                $medFee = ($statsMed1->price * $qty);
+
+                Invoice::create([
+                    'appointment_id' => $statsApt->id,
+                    'invoice_number' => 'INV-' . strtoupper(uniqid()),
+                    'consultation_fee' => $randDoctor->consultation_fee,
+                    'medicine_fee' => $medFee,
+                    'total_amount' => $randDoctor->consultation_fee + $medFee,
+                    'payment_method' => rand(0, 1) ? 'cash' : 'vietqr',
+                    'payment_status' => 'paid',
+                    'created_at' => $randomDate,
+                    'updated_at' => $randomDate,
+                ]);
+            }
+        }
     }
 }

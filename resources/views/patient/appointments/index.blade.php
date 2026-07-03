@@ -51,13 +51,53 @@
                                     <td>{{ $apt->reason }}</td>
                                     <td>
                                         @if($apt->status == 0)
-                                            <span class="badge bg-warning text-dark">Chờ duyệt</span>
+                                            <span class="badge bg-warning text-dark mb-1">Chờ duyệt</span>
                                         @elseif($apt->status == 1)
-                                            <span class="badge bg-success">Đã duyệt</span>
+                                            <span class="badge bg-success mb-1">Đã duyệt</span>
+                                        @elseif($apt->status == 2)
+                                            <span class="badge bg-info mb-1">Đang chờ khám</span>
                                         @elseif($apt->status == 6)
-                                            <span class="badge bg-danger">Đã hủy</span>
+                                            <span class="badge bg-danger mb-1">Đã hủy</span>
+                                            @if($apt->cancel_reason)
+                                                <br><small class="text-muted">Lý do: {{ $apt->cancel_reason }}</small>
+                                            @endif
                                         @else
-                                            <span class="badge bg-info">Đã xử lý</span>
+                                            <span class="badge bg-secondary mb-1">Đã xử lý</span>
+                                        @endif
+
+                                        @if($apt->status < 3)
+                                            <div class="mt-2">
+                                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#cancelModal{{ $apt->id }}">
+                                                    Hủy lịch
+                                                </button>
+                                            </div>
+                                            
+                                            <!-- Modal Hủy Lịch -->
+                                            <div class="modal fade" id="cancelModal{{ $apt->id }}" tabindex="-1" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header bg-danger text-white">
+                                                            <h5 class="modal-title">Xác nhận hủy lịch khám</h5>
+                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <form action="{{ route('patient.appointments.cancel', $apt->id) }}" method="POST">
+                                                            @csrf
+                                                            @method('PATCH')
+                                                            <div class="modal-body text-start text-dark">
+                                                                <p>Bạn có chắc chắn muốn hủy lịch khám vào ngày <strong>{{ \Carbon\Carbon::parse($apt->date)->format('d/m/Y') }}</strong>?</p>
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Vui lòng nhập lý do hủy:</label>
+                                                                    <textarea name="cancel_reason" class="form-control" rows="3" required></textarea>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                                                <button type="submit" class="btn btn-danger">Xác nhận Hủy</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         @endif
                                     </td>
                                 </tr>
