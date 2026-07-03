@@ -57,6 +57,15 @@ class DatabaseSeeder extends Seeder
             'role' => 'receptionist',
         ]);
 
+        $receptionist2 = User::create([
+            'name' => 'Lễ tân Mai',
+            'email' => 'receptionist2@clinic.com',
+            'phone' => '0901000008',
+            'citizen_id' => '001200000008',
+            'password' => Hash::make('password'),
+            'role' => 'receptionist',
+        ]);
+
         $doctorUser1 = User::create([
             'name' => 'Nguyễn Văn A',
             'email' => 'doctor@clinic.com',
@@ -93,6 +102,26 @@ class DatabaseSeeder extends Seeder
             'role' => 'doctor',
         ]);
 
+        $extraDoctorUsers = [];
+        $extraDoctors = [
+            ['name' => 'Bac si Hoang Minh', 'email' => 'doctor5@clinic.com', 'phone' => '0901000010', 'citizen_id' => '001200000010'],
+            ['name' => 'Bac si Do Thu Ha', 'email' => 'doctor6@clinic.com', 'phone' => '0901000011', 'citizen_id' => '001200000011'],
+            ['name' => 'Bac si Vo Quoc Huy', 'email' => 'doctor7@clinic.com', 'phone' => '0901000012', 'citizen_id' => '001200000012'],
+            ['name' => 'Bac si Nguyen Minh Anh', 'email' => 'doctor8@clinic.com', 'phone' => '0901000013', 'citizen_id' => '001200000013'],
+            ['name' => 'Bac si Truong Thanh Son', 'email' => 'doctor9@clinic.com', 'phone' => '0901000014', 'citizen_id' => '001200000014'],
+        ];
+
+        foreach ($extraDoctors as $doctorData) {
+            $extraDoctorUsers[] = User::create([
+                'name' => $doctorData['name'],
+                'email' => $doctorData['email'],
+                'phone' => $doctorData['phone'],
+                'citizen_id' => $doctorData['citizen_id'],
+                'password' => Hash::make('password'),
+                'role' => 'doctor',
+            ]);
+        }
+
         $patientUser = User::create([
             'name' => 'Bệnh nhân Test',
             'email' => 'patient@clinic.com',
@@ -102,12 +131,88 @@ class DatabaseSeeder extends Seeder
             'role' => 'patient',
         ]);
 
+        $patientUser2 = User::create([
+            'name' => 'Bệnh nhân Lan',
+            'email' => 'patient2@clinic.com',
+            'phone' => '0901000009',
+            'citizen_id' => '001200000009',
+            'password' => Hash::make('password'),
+            'role' => 'patient',
+        ]);
+
         // 2. Tạo Bệnh nhân (Patient profile)
+        $extraPatientUsers = [];
+        $extraPatients = [
+            [
+                'name' => 'Benh nhan Minh Khang',
+                'email' => 'patient3@clinic.com',
+                'phone' => '0901000015',
+                'citizen_id' => '001200000015',
+                'date_of_birth' => '1988-03-12',
+                'gender' => 'male',
+                'address' => '12 Le Loi, Quan 1, TP.HCM',
+            ],
+            [
+                'name' => 'Benh nhan Thu Thao',
+                'email' => 'patient4@clinic.com',
+                'phone' => '0901000016',
+                'citizen_id' => '001200000016',
+                'date_of_birth' => '1994-09-08',
+                'gender' => 'female',
+                'address' => '88 Cach Mang Thang 8, Quan 3, TP.HCM',
+            ],
+            [
+                'name' => 'Benh nhan Quoc Bao',
+                'email' => 'patient5@clinic.com',
+                'phone' => '0901000017',
+                'citizen_id' => '001200000017',
+                'date_of_birth' => '1979-11-25',
+                'gender' => 'male',
+                'address' => '31 Vo Van Tan, Quan 3, TP.HCM',
+            ],
+            [
+                'name' => 'Benh nhan Ngoc Han',
+                'email' => 'patient6@clinic.com',
+                'phone' => '0901000018',
+                'citizen_id' => '001200000018',
+                'date_of_birth' => '2001-01-18',
+                'gender' => 'female',
+                'address' => '20 Phan Xich Long, Phu Nhuan, TP.HCM',
+            ],
+            [
+                'name' => 'Benh nhan Gia Phuc',
+                'email' => 'patient7@clinic.com',
+                'phone' => '0901000019',
+                'citizen_id' => '001200000019',
+                'date_of_birth' => '2010-07-30',
+                'gender' => 'male',
+                'address' => '5 Nguyen Huu Canh, Binh Thanh, TP.HCM',
+            ],
+        ];
+
+        foreach ($extraPatients as $patientData) {
+            $extraPatientUsers[] = User::create([
+                'name' => $patientData['name'],
+                'email' => $patientData['email'],
+                'phone' => $patientData['phone'],
+                'citizen_id' => $patientData['citizen_id'],
+                'password' => Hash::make('password'),
+                'role' => 'patient',
+            ]);
+        }
+
         $patient = Patient::create([
             'user_id' => $patientUser->id,
             'date_of_birth' => '1990-01-01',
             'gender' => 'male',
             'address' => '123 Đường Test, Quận 1, TP.HCM',
+        ]);
+
+        $patient2 = Patient::create([
+            'user_id' => $patientUser2->id,
+            'date_of_birth' => '1996-05-20',
+            'gender' => 'female',
+            'address' => '45 Nguyễn Trãi, Quận 5, TP.HCM',
         ]);
 
         // 3. Tạo Chuyên khoa (Specialties)
@@ -120,6 +225,15 @@ class DatabaseSeeder extends Seeder
         $specMat = Specialty::create(['name' => 'Nhãn khoa', 'description' => 'Khám và điều trị các bệnh lý về Mắt.']);
 
         // 4. Tạo Bác sĩ (Doctors)
+        foreach ($extraPatients as $index => $patientData) {
+            Patient::create([
+                'user_id' => $extraPatientUsers[$index]->id,
+                'date_of_birth' => $patientData['date_of_birth'],
+                'gender' => $patientData['gender'],
+                'address' => $patientData['address'],
+            ]);
+        }
+
         $doctor1 = Doctor::create([
             'user_id' => $doctorUser1->id,
             'specialty_id' => $specNoiKhoa->id,
@@ -154,6 +268,50 @@ class DatabaseSeeder extends Seeder
 
         // 5. Tạo Lịch trực (Schedules)
         // Doctor 1 trực Thứ 2, Thứ 4, Thứ 6 (1, 3, 5 trong day_of_week)
+        $extraDoctorProfiles = [
+            [
+                'specialty_id' => $specDaLieu->id,
+                'title' => 'BS.CKI',
+                'bio' => 'Bac si chuyen khoa Da lieu, dieu tri mun va di ung da.',
+                'consultation_fee' => 180000,
+            ],
+            [
+                'specialty_id' => $specTaiMuiHong->id,
+                'title' => 'Ths.BS',
+                'bio' => 'Bac si Tai Mui Hong, dieu tri viem xoang va viem hong.',
+                'consultation_fee' => 160000,
+            ],
+            [
+                'specialty_id' => $specMat->id,
+                'title' => 'BS.CKII',
+                'bio' => 'Bac si Nhan khoa, kham tat khuc xa va benh ly day mat.',
+                'consultation_fee' => 220000,
+            ],
+            [
+                'specialty_id' => $specNoiKhoa->id,
+                'title' => 'TS.BS',
+                'bio' => 'Bac si Noi tong quat, theo doi benh man tinh va tu van suc khoe.',
+                'consultation_fee' => 250000,
+            ],
+            [
+                'specialty_id' => $specTimMach->id,
+                'title' => 'BS.CKI',
+                'bio' => 'Bac si Tim mach, kham huyet ap, roi loan nhip va dau nguc.',
+                'consultation_fee' => 240000,
+            ],
+        ];
+
+        $extraDoctorModels = [];
+        foreach ($extraDoctorProfiles as $index => $doctorProfile) {
+            $extraDoctorModels[] = Doctor::create([
+                'user_id' => $extraDoctorUsers[$index]->id,
+                'specialty_id' => $doctorProfile['specialty_id'],
+                'title' => $doctorProfile['title'],
+                'bio' => $doctorProfile['bio'],
+                'consultation_fee' => $doctorProfile['consultation_fee'],
+            ]);
+        }
+
         foreach ([1, 3, 5] as $day) {
             Schedule::create(['doctor_id' => $doctor1->id, 'day_of_week' => $day, 'shift' => 'morning', 'max_patients_per_slot' => 10]);
             Schedule::create(['doctor_id' => $doctor1->id, 'day_of_week' => $day, 'shift' => 'afternoon', 'max_patients_per_slot' => 10]);
@@ -177,6 +335,18 @@ class DatabaseSeeder extends Seeder
         }
 
         // 6. Tạo Danh mục Thuốc (Medicines)
+        foreach ($extraDoctorModels as $index => $doctor) {
+            foreach ([1, 2, 3, 4, 5] as $day) {
+                $shift = ($index + $day) % 2 === 0 ? 'morning' : 'afternoon';
+                Schedule::create([
+                    'doctor_id' => $doctor->id,
+                    'day_of_week' => $day,
+                    'shift' => $shift,
+                    'max_patients_per_slot' => 8,
+                ]);
+            }
+        }
+
         $medicines = [
             ['name' => 'Paracetamol 500mg', 'unit' => 'Viên', 'price' => 1500, 'stock' => 1000],
             ['name' => 'Amoxicillin 500mg', 'unit' => 'Viên', 'price' => 2000, 'stock' => 500],
@@ -267,6 +437,69 @@ class DatabaseSeeder extends Seeder
             'status' => 0, // Chờ duyệt
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
+        ]);
+
+        // 9. Tạo thêm dữ liệu mẫu để test hàng chờ bác sĩ và thanh toán
+        $today = Carbon::today();
+
+        Appointment::create([
+            'patient_id' => $patientUser2->id,
+            'doctor_id' => $doctor1->id,
+            'date' => $today->toDateString(),
+            'shift' => 'morning',
+            'type' => 'offline',
+            'reason' => 'Đau họng, sốt nhẹ',
+            'status' => 2, // Đang chờ khám
+            'is_priority' => true,
+            'created_at' => Carbon::now()->subMinutes(40),
+            'updated_at' => Carbon::now()->subMinutes(40),
+        ]);
+
+        $paymentAppointment = Appointment::create([
+            'patient_id' => $patientUser2->id,
+            'doctor_id' => $doctor2->id,
+            'date' => $today->toDateString(),
+            'shift' => 'afternoon',
+            'type' => 'offline',
+            'reason' => 'Ho kéo dài, nghẹt mũi',
+            'status' => 4, // Chờ thanh toán
+            'created_at' => Carbon::now()->subHours(2),
+            'updated_at' => Carbon::now()->subHour(),
+        ]);
+
+        $paymentRecord = MedicalRecord::create([
+            'appointment_id' => $paymentAppointment->id,
+            'symptoms' => 'Ho khan, nghẹt mũi, mệt mỏi.',
+            'diagnosis' => 'Viêm đường hô hấp trên.',
+            'notes' => 'Uống nhiều nước, tái khám nếu sốt cao.',
+        ]);
+
+        PrescriptionDetail::create([
+            'medical_record_id' => $paymentRecord->id,
+            'medicine_id' => $medModels[0]->id,
+            'quantity' => 8,
+            'dosage' => 'Ngày 2 lần, mỗi lần 1 viên sau ăn.',
+            'price_at_sale' => $medModels[0]->price,
+        ]);
+
+        PrescriptionDetail::create([
+            'medical_record_id' => $paymentRecord->id,
+            'medicine_id' => $medModels[6]->id,
+            'quantity' => 1,
+            'dosage' => 'Ngày 3 lần, mỗi lần 10ml.',
+            'price_at_sale' => $medModels[6]->price,
+        ]);
+
+        $pendingMedicineFee = (8 * $medModels[0]->price) + $medModels[6]->price;
+
+        Invoice::create([
+            'appointment_id' => $paymentAppointment->id,
+            'invoice_number' => 'INV-' . strtoupper(uniqid()),
+            'consultation_fee' => $doctor2->consultation_fee,
+            'medicine_fee' => $pendingMedicineFee,
+            'total_amount' => $doctor2->consultation_fee + $pendingMedicineFee,
+            'payment_method' => null,
+            'payment_status' => 'unpaid',
         ]);
     }
 }
