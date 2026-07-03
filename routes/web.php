@@ -25,15 +25,6 @@ Route::get('/home', function () {
 // 3. Các Route dành riêng cho từng Role đã phân quyền
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
-    
-    // Quản lý nhân sự
-    Route::resource('staff', App\Http\Controllers\Admin\StaffController::class)->except(['show', 'destroy']);
-    Route::patch('staff/{staff}/toggle-active', [App\Http\Controllers\Admin\StaffController::class, 'toggleActive'])->name('staff.toggle-active');
-    Route::post('staff/{staff}/reset-password', [App\Http\Controllers\Admin\StaffController::class, 'resetPassword'])->name('staff.reset-password');
-
-    // Quản lý chuyên khoa
-    Route::resource('specialties', App\Http\Controllers\Admin\SpecialtyController::class)->except(['create', 'show', 'edit']);
-
     Route::resource('users', UserController::class);
     Route::patch(
             'users/{user}/reset-password',
@@ -43,6 +34,16 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
             'users/{user}/toggle-status',
             [UserController::class, 'toggleStatus']
         )->name('users.toggle-status');
+    
+    // Quản lý nhân sự
+    Route::resource('staff', App\Http\Controllers\Admin\StaffController::class)->except(['show', 'destroy']);
+    Route::patch('staff/{staff}/toggle-active', [App\Http\Controllers\Admin\StaffController::class, 'toggleActive'])->name('staff.toggle-active');
+    Route::post('staff/{staff}/reset-password', [App\Http\Controllers\Admin\StaffController::class, 'resetPassword'])->name('staff.reset-password');
+
+    // Quản lý chuyên khoa
+    Route::resource('specialties', App\Http\Controllers\Admin\SpecialtyController::class);
+
+    
 });
 
 Route::middleware(['auth', 'role:doctor'])->prefix('doctor')->name('doctor.')->group(function () {
